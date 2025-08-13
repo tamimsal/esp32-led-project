@@ -5,7 +5,7 @@
 const char* WIFI_SSID = "ASSD";
 const char* WIFI_PASS = "Aeliasoft@2024";
 
-const char* SERVER_URL = "https://esp32-led-server.onrender.com";
+const char* SERVER_URL = "https://esp32-led-project.onrender.com";
 const char* DEVICE_ID = "esp32-1";
 const char* KEY = "supersecret";
 
