@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>ESP32 LED Control</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  body { font-family: Arial; text-align: center; margin-top: 50px; }
+  button { padding: 15px 30px; font-size: 18px; margin: 10px; cursor: pointer; }
+  .on { background-color: green; color: white; }
+  .off { background-color: red; color: white; }
+</style>
+</head>
+<body>
+<h1>ESP32 LED Control</h1>
+<p id="msg">Ready</p>
+<button class="on" onclick="send('ON')">ON</button>
+<button class="off" onclick="send('OFF')">OFF</button>
+
+<script>
+const SERVER_URL = 'https://esp32-led-server.onrender.com';
+const DEVICE_ID = 'esp32-1';
+const KEY = 'supersecret';
+
+async function send(cmd) {
+  try {
+    const res = await fetch(SERVER_URL + '/api/cmd', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ device: DEVICE_ID, command: cmd, key: KEY })
+    });
+    const data = await res.json();
+    document.getElementById('msg').textContent = res.ok ? `Sent ${cmd}` : `Error`;
+  } catch (e) {
+    document.getElementById('msg').textContent = 'Network error';
+  }
+}
+</script>
+</body>
+</html>
