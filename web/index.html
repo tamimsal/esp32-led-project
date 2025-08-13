@@ -9,6 +9,7 @@
   button { padding: 15px 30px; font-size: 18px; margin: 10px; cursor: pointer; }
   .on { background-color: green; color: white; }
   .off { background-color: red; color: white; }
+  #msg { margin-top: 20px; font-size: 16px; min-height: 1.2em; }
 </style>
 </head>
 <body>
@@ -18,9 +19,9 @@
 <button class="off" onclick="send('OFF')">OFF</button>
 
 <script>
-const SERVER_URL = 'https://esp32-led-server.onrender.com';
-const DEVICE_ID = 'esp32-1';
-const KEY = 'supersecret';
+const SERVER_URL = 'https://YOUR-RENDER-URL'; // Replace with your Render backend URL
+const DEVICE_ID = 'esp32-1';                   // Must match your ESP32 device ID
+const KEY = 'supersecret';                     // Must match TOKEN in Render environment
 
 async function send(cmd) {
   try {
@@ -29,10 +30,9 @@ async function send(cmd) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ device: DEVICE_ID, command: cmd, key: KEY })
     });
-    const data = await res.json();
-    document.getElementById('msg').textContent = res.ok ? `Sent ${cmd}` : `Error`;
+    document.getElementById('msg').textContent = res.ok ? `Sent ${cmd} ✅` : `Error ${res.status} ❌`;
   } catch (e) {
-    document.getElementById('msg').textContent = 'Network error';
+    document.getElementById('msg').textContent = 'Network error ❌';
   }
 }
 </script>
