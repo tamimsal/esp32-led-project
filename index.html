@@ -20,8 +20,8 @@
 
 <script>
 const SERVER_URL = 'https://esp32-led-project.onrender.com'; 
-const DEVICE_ID = 'esp32-1';                   // Must match your ESP32 device ID
-const KEY = 'supersecret';                    
+const DEVICE_ID = 'esp32-1';
+const KEY = 'supersecret';
 
 async function send(cmd) {
   try {
@@ -30,11 +30,15 @@ async function send(cmd) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ device: DEVICE_ID, command: cmd, key: KEY })
     });
-    document.getElementById('msg').textContent = res.ok ? `Sent ${cmd} ✅` : `Error ${res.status} ❌`;
-  } catch (e) {
+    const data = await res.json().catch(() => ({}));
+    const delivered = data.delivered ? ' (delivered)' : ' (queued)';
+    document.getElementById('msg').textContent =
+      res.ok ? `Sent ${cmd} ✅${delivered}` : `Error ${res.status} ❌`;
+  } catch {
     document.getElementById('msg').textContent = 'Network error ❌';
   }
 }
 </script>
+
 </body>
 </html>
