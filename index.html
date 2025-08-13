@@ -5,18 +5,67 @@
 <title>ESP32 LED Control</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
-  body { font-family: Arial; text-align: center; margin-top: 50px; }
-  button { padding: 15px 30px; font-size: 18px; margin: 10px; cursor: pointer; }
-  .on { background-color: green; color: white; }
-  .off { background-color: red; color: white; }
-  #msg { margin-top: 20px; font-size: 16px; min-height: 1.2em; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    padding: 20px;
+  }
+  header img {
+    height: 60px;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  #msg {
+    font-size: 1rem;
+    margin-top: 10px;
+    min-height: 1.5em;
+    color: #ccc;
+  }
+  button {
+    padding: 15px 35px;
+    font-size: 1.1rem;
+    margin: 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+  .on {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+  }
+  .off {
+    background: linear-gradient(135deg, #dc3545, #ff4d6d);
+    color: white;
+  }
+  button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  }
 </style>
 </head>
 <body>
-<h1>ESP32 LED Control</h1>
-<p id="msg">Ready</p>
-<button class="on" onclick="send('ON')">ON</button>
-<button class="off" onclick="send('OFF')">OFF</button>
+<header>
+  <img src="https://aeliasoft.com/wp-content/uploads/2025/05/aeliasoft-logo-F-1.webp" alt="Aeliasoft Logo" />
+  <h1>ESP32 LED Control</h1>
+  <p id="msg">Ready</p>
+</header>
+
+<main>
+  <button class="on" onclick="send('ON')">ON</button>
+  <button class="off" onclick="send('OFF')">OFF</button>
+</main>
 
 <script>
 const SERVER_URL = 'https://esp32-led-project.onrender.com'; 
@@ -39,6 +88,5 @@ async function send(cmd) {
   }
 }
 </script>
-
 </body>
 </html>
