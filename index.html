@@ -60,10 +60,13 @@
 <header>
   <img src="https://aeliasoft.com/wp-content/uploads/2025/05/aeliasoft-logo-F-1.webp" alt="Aeliasoft Logo" />
   <h1>Meeting Light Control</h1>
-  <p id="msg">Ready</p>
+  <p id="msg">Enter PIN to control your light</p>
 </header>
 
 <main>
+  <div style="margin: 10px;">
+    <input id="pin" type="password" placeholder="Enter PIN" style="padding: 12px; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc;" />
+  </div>
   <button class="on" onclick="send('ON')">ON</button>
   <button class="off" onclick="send('OFF')">OFF</button>
 </main>
@@ -78,12 +81,12 @@ async function send(cmd) {
     const res = await fetch(SERVER_URL + '/api/cmd', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ device: DEVICE_ID, command: cmd, key: KEY })
+      body: JSON.stringify({ device: DEVICE_ID, action: cmd, pin: document.getElementById('pin').value.trim(), key: KEY })
     });
     const data = await res.json().catch(() => ({}));
     const delivered = data.delivered ? ' (delivered)' : ' (queued)';
     document.getElementById('msg').textContent =
-      res.ok ? `Sent ${cmd} ✅${delivered}` : `Error ${res.status} ❌`;
+      res.ok ? `Sent ${cmd} ✅${delivered}` : (data && data.error === 'invalid_pin' ? 'Invalid PIN ❌' : `Error ${res.status} ❌`);
   } catch {
     document.getElementById('msg').textContent = 'Network error ❌';
   }

@@ -8,6 +8,13 @@ app.use(cors());
 app.use(express.json());
 
 const TOKEN = process.env.TOKEN || 'supersecret';
+// Simple PIN map -> channel number (1..3). Prefer environment variables in production.
+// Example env usage: PIN1=1234 PIN2=2345 PIN3=3456
+const PIN_TO_CHANNEL = new Map([
+  [(process.env.PIN1 || '1111'), 1],
+  [(process.env.PIN2 || '2222'), 2],
+  [(process.env.PIN3 || '3333'), 3],
+]);
 
 // Maps to track device state
 const sockets = new Map();   // deviceId -> ws
@@ -16,24 +23,40 @@ const commands = new Map();  // deviceId -> "ON" | "OFF" (latest pending if devi
 // Simple health check
 app.get('/api/health', (req, res) => res.send('ok'));
 
-// Frontend posts a command
+// Frontend posts a command. Accepts either:
+// - Legacy: { device, command: 'ON'|'OFF', key }
+// - PIN-based: { device, action: 'ON'|'OFF', pin, key }
 app.post('/api/cmd', (req, res) => {
-  const { device, command, key } = req.body || {};
-  const cmd = String(command || '').toUpperCase();
-
+  const { device, command, action, key, pin } = req.body || {};
   if (key !== TOKEN) return res.status(401).json({ error: 'unauthorized' });
-  if (!device || !['ON', 'OFF'].includes(cmd))
+  if (!device) return res.status(400).json({ error: 'bad request' });
+
+  // Determine final command to send to device
+  let finalCmd = '';
+
+  const normalizedAction = String(action || command || '').toUpperCase();
+  if (!['ON', 'OFF'].includes(normalizedAction)) {
     return res.status(400).json({ error: 'bad request' });
+  }
+
+  if (typeof pin === 'string' && pin.length > 0) {
+    const channel = PIN_TO_CHANNEL.get(pin);
+    if (!channel) return res.status(403).json({ error: 'invalid_pin' });
+    finalCmd = `CH${channel}_${normalizedAction}`; // e.g., CH1_ON
+  } else {
+    // Legacy single-channel behavior (maps to CH1)
+    finalCmd = normalizedAction.startsWith('CH') ? normalizedAction : `CH1_${normalizedAction}`;
+  }
 
   const ws = sockets.get(device);
 
   if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(cmd);                // push immediately to ESP32
-    return res.json({ status: 'sent', device, command: cmd, delivered: true });
+    ws.send(finalCmd);
+    return res.json({ status: 'sent', device, command: finalCmd, delivered: true });
   } else {
     // Device offline: remember the latest command and deliver on next connect
-    commands.set(device, cmd);
-    return res.json({ status: 'queued', device, command: cmd, delivered: false });
+    commands.set(device, finalCmd);
+    return res.json({ status: 'queued', device, command: finalCmd, delivered: false });
   }
 });
 
