@@ -54,6 +54,42 @@
     transform: scale(1.05);
     box-shadow: 0 6px 20px rgba(0,0,0,0.2);
   }
+  .container {
+    max-width: 460px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 20px 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+  .row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .input {
+    padding: 12px 14px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1px solid #d0d0d5;
+    outline: none;
+    width: 220px;
+    transition: box-shadow .2s ease, border-color .2s ease;
+  }
+  .input:focus {
+    border-color: #5b9cff;
+    box-shadow: 0 0 0 3px rgba(91,156,255,0.15);
+  }
+  .helper {
+    font-size: .9rem;
+    color: #777;
+    margin-top: 6px;
+    min-height: 1.2em;
+  }
+  .msg-success { color: #1e7e34; }
+  .msg-error { color: #c82333; }
 </style>
 </head>
 <body>
@@ -64,11 +100,17 @@
 </header>
 
 <main>
-  <div style="margin: 10px;">
-    <input id="pin" type="password" placeholder="Enter PIN" style="padding: 12px; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc;" />
+  <div class="container">
+    <div class="row" style="margin: 12px 0 6px;">
+      <input id="pin" class="input" type="password" placeholder="Enter PIN" />
+    </div>
+    <div id="pinHelper" class="helper">PIN is required to control your assigned light.</div>
+    <div class="row" style="margin-top: 16px;">
+      <button id="btnOn" class="on" onclick="send('ON')">ON</button>
+      <button id="btnOff" class="off" onclick="send('OFF')">OFF</button>
+    </div>
+    <div id="msg" class="helper" style="margin-top: 14px;"></div>
   </div>
-  <button class="on" onclick="send('ON')">ON</button>
-  <button class="off" onclick="send('OFF')">OFF</button>
 </main>
 
 <script>
@@ -78,17 +120,65 @@ const KEY = 'supersecret';
 
 async function send(cmd) {
   try {
+    const pinEl = document.getElementById('pin');
+    const helper = document.getElementById('pinHelper');
+    const onBtn = document.getElementById('btnOn');
+    const offBtn = document.getElementById('btnOff');
+
+    const pinVal = pinEl.value.trim();
+    if (!pinVal) {
+      helper.textContent = 'Please enter your PIN.';
+      helper.classList.remove('msg-success');
+      helper.classList.add('msg-error');
+      document.getElementById('msg').textContent = '';
+      return;
+    }
+
+    onBtn.disabled = true; offBtn.disabled = true;
+    onBtn.style.opacity = '0.7'; offBtn.style.opacity = '0.7';
+    helper.textContent = 'Sending command...';
+    helper.classList.remove('msg-error');
+    helper.classList.remove('msg-success');
+
     const res = await fetch(SERVER_URL + '/api/cmd', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ device: DEVICE_ID, action: cmd, pin: document.getElementById('pin').value.trim(), key: KEY })
+      body: JSON.stringify({ device: DEVICE_ID, action: cmd, pin: pinVal, key: KEY })
     });
     const data = await res.json().catch(() => ({}));
     const delivered = data.delivered ? ' (delivered)' : ' (queued)';
-    document.getElementById('msg').textContent =
-      res.ok ? `Sent ${cmd} ✅${delivered}` : (data && data.error === 'invalid_pin' ? 'Invalid PIN ❌' : `Error ${res.status} ❌`);
+    const msg = document.getElementById('msg');
+    if (res.ok) {
+      helper.textContent = 'Command sent successfully.';
+      helper.classList.remove('msg-error');
+      helper.classList.add('msg-success');
+      msg.textContent = `Sent ${cmd} ✅${delivered}`;
+      msg.classList.remove('msg-error');
+      msg.classList.add('msg-success');
+    } else {
+      const isInvalidPin = data && data.error === 'invalid_pin';
+      helper.textContent = isInvalidPin ? 'Invalid PIN. Please try again.' : 'Failed to send command.';
+      helper.classList.remove('msg-success');
+      helper.classList.add('msg-error');
+      msg.textContent = isInvalidPin ? 'Invalid PIN ❌' : `Error ${res.status} ❌`;
+      msg.classList.remove('msg-success');
+      msg.classList.add('msg-error');
+    }
   } catch {
-    document.getElementById('msg').textContent = 'Network error ❌';
+    const helper = document.getElementById('pinHelper');
+    helper.textContent = 'Network error. Please check your connection.';
+    helper.classList.remove('msg-success');
+    helper.classList.add('msg-error');
+    const msg = document.getElementById('msg');
+    msg.textContent = 'Network error ❌';
+    msg.classList.remove('msg-success');
+    msg.classList.add('msg-error');
+  }
+  finally {
+    const onBtn = document.getElementById('btnOn');
+    const offBtn = document.getElementById('btnOff');
+    onBtn.disabled = false; offBtn.disabled = false;
+    onBtn.style.opacity = '1'; offBtn.style.opacity = '1';
   }
 }
 </script>
