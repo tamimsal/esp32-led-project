@@ -8,12 +8,13 @@ app.use(cors());
 app.use(express.json());
 
 const TOKEN = process.env.TOKEN || 'supersecret';
-// Simple PIN map -> channel number (1..3). Prefer environment variables in production.
-// Example env usage: PIN1=1234 PIN2=2345 PIN3=3456
+// Simple PIN map -> channel number (1..4). Prefer environment variables in production.
+// Example env usage: PIN1=1234 PIN2=2345 PIN3=3456 PIN4=4567
 const PIN_TO_CHANNEL = new Map([
   [(process.env.PIN1 || '1111'), 1],
   [(process.env.PIN2 || '2222'), 2],
   [(process.env.PIN3 || '3333'), 3],
+  [(process.env.PIN4 || '4444'), 4],
 ]);
 
 // Maps to track device state

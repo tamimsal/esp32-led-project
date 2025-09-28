@@ -1,9 +1,10 @@
 #include <WiFi.h>
 #include <WebSocketsClient.h>
 
-#define RELAY1_PIN 12
-#define RELAY2_PIN 14
-#define RELAY3_PIN 27
+#define RELAY1_PIN 26
+#define RELAY2_PIN 25
+#define RELAY3_PIN 23
+#define RELAY4_PIN 32
 
 const char* WIFI_SSID = "ASSD";
 const char* WIFI_PASS = "Aeliasoft@2024";
@@ -38,6 +39,8 @@ void onWsEvent(WStype_t type, uint8_t * payload, size_t length) {
       if (cmd == "CH2_OFF") digitalWrite(RELAY2_PIN, LOW);
       if (cmd == "CH3_ON")  digitalWrite(RELAY3_PIN, HIGH);
       if (cmd == "CH3_OFF") digitalWrite(RELAY3_PIN, LOW);
+      if (cmd == "CH4_ON")  digitalWrite(RELAY4_PIN, HIGH);
+      if (cmd == "CH4_OFF") digitalWrite(RELAY4_PIN, LOW);
       break;
     }
 
@@ -50,9 +53,11 @@ void setup() {
   pinMode(RELAY1_PIN, OUTPUT);
   pinMode(RELAY2_PIN, OUTPUT);
   pinMode(RELAY3_PIN, OUTPUT);
+  pinMode(RELAY4_PIN, OUTPUT);
   digitalWrite(RELAY1_PIN, LOW);
   digitalWrite(RELAY2_PIN, LOW);
   digitalWrite(RELAY3_PIN, LOW);
+  digitalWrite(RELAY4_PIN, LOW);
 
   Serial.begin(115200);
   Serial.print("Connecting to WiFi");
