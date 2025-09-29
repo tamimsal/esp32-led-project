@@ -96,15 +96,21 @@
 <header>
   <img src="https://aeliasoft.com/wp-content/uploads/2025/05/aeliasoft-logo-F-1.webp" alt="Aeliasoft Logo" />
   <h1>Meeting Light Control</h1>
-  <p id="msg">Enter PIN to control your light</p>
+  <p id="msg">Select a light to control</p>
 </header>
 
 <main>
   <div class="container">
     <div class="row" style="margin: 12px 0 6px;">
-      <input id="pin" class="input" type="password" placeholder="Enter PIN" />
+      <select id="lightSelect" class="input" style="width: 240px;">
+        <option value="">Select a light...</option>
+        <option value="1111">Light1</option>
+        <option value="2222">Light2</option>
+        <option value="3333">Light3</option>
+        <option value="4444">BOSS light</option>
+      </select>
     </div>
-    <div id="pinHelper" class="helper">PIN is required to control your assigned light.</div>
+    <div id="pinHelper" class="helper">Select which light you want to control.</div>
     <div class="row" style="margin-top: 16px;">
       <button id="btnOn" class="on" onclick="send('ON')">ON</button>
       <button id="btnOff" class="off" onclick="send('OFF')">OFF</button>
@@ -120,14 +126,14 @@ const KEY = 'supersecret';
 
 async function send(cmd) {
   try {
-    const pinEl = document.getElementById('pin');
+    const lightSelect = document.getElementById('lightSelect');
     const helper = document.getElementById('pinHelper');
     const onBtn = document.getElementById('btnOn');
     const offBtn = document.getElementById('btnOff');
 
-    const pinVal = pinEl.value.trim();
+    const pinVal = lightSelect.value;
     if (!pinVal) {
-      helper.textContent = 'Please enter your PIN.';
+      helper.textContent = 'Please select a light.';
       helper.classList.remove('msg-success');
       helper.classList.add('msg-error');
       document.getElementById('msg').textContent = '';

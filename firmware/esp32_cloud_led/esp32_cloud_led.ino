@@ -33,14 +33,14 @@ void onWsEvent(WStype_t type, uint8_t * payload, size_t length) {
       String cmd = String((char*)payload).substring(0, length);
       cmd.trim();
       Serial.printf("[WS] cmd: %s\n", cmd.c_str());
-      if (cmd == "CH1_ON")  { digitalWrite(RELAY1_PIN, HIGH); Serial.println("Relay 1 ON"); }
-      if (cmd == "CH1_OFF") { digitalWrite(RELAY1_PIN, LOW);  Serial.println("Relay 1 OFF"); }
-      if (cmd == "CH2_ON")  { digitalWrite(RELAY2_PIN, HIGH); Serial.println("Relay 2 ON"); }
-      if (cmd == "CH2_OFF") { digitalWrite(RELAY2_PIN, LOW);  Serial.println("Relay 2 OFF"); }
-      if (cmd == "CH3_ON")  { digitalWrite(RELAY3_PIN, HIGH); Serial.println("Relay 3 ON"); }
-      if (cmd == "CH3_OFF") { digitalWrite(RELAY3_PIN, LOW);  Serial.println("Relay 3 OFF"); }
-      if (cmd == "CH4_ON")  { digitalWrite(RELAY4_PIN, HIGH); Serial.println("Relay 4 ON"); }
-      if (cmd == "CH4_OFF") { digitalWrite(RELAY4_PIN, LOW);  Serial.println("Relay 4 OFF"); }
+      if (cmd == "CH1_ON")  { digitalWrite(RELAY1_PIN, LOW);  Serial.println("Relay 1 ON"); }
+      if (cmd == "CH1_OFF") { digitalWrite(RELAY1_PIN, HIGH); Serial.println("Relay 1 OFF"); }
+      if (cmd == "CH2_ON")  { digitalWrite(RELAY2_PIN, LOW);  Serial.println("Relay 2 ON"); }
+      if (cmd == "CH2_OFF") { digitalWrite(RELAY2_PIN, HIGH); Serial.println("Relay 2 OFF"); }
+      if (cmd == "CH3_ON")  { digitalWrite(RELAY3_PIN, LOW);  Serial.println("Relay 3 ON"); }
+      if (cmd == "CH3_OFF") { digitalWrite(RELAY3_PIN, HIGH); Serial.println("Relay 3 OFF"); }
+      if (cmd == "CH4_ON")  { digitalWrite(RELAY4_PIN, LOW);  Serial.println("Relay 4 ON"); }
+      if (cmd == "CH4_OFF") { digitalWrite(RELAY4_PIN, HIGH); Serial.println("Relay 4 OFF"); }
       break;
     }
 
@@ -56,10 +56,10 @@ void setup() {
   pinMode(RELAY2_PIN, OUTPUT);
   pinMode(RELAY3_PIN, OUTPUT);
   pinMode(RELAY4_PIN, OUTPUT);
-  digitalWrite(RELAY1_PIN, LOW);
-  digitalWrite(RELAY2_PIN, LOW);
-  digitalWrite(RELAY3_PIN, LOW);
-  digitalWrite(RELAY4_PIN, LOW);
+  digitalWrite(RELAY1_PIN, HIGH);
+  digitalWrite(RELAY2_PIN, HIGH);
+  digitalWrite(RELAY3_PIN, HIGH);
+  digitalWrite(RELAY4_PIN, HIGH);
   
   Serial.println("Relay pins initialized:");
   Serial.printf("Relay 1: Pin %d\n", RELAY1_PIN);
