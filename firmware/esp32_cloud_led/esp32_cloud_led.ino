@@ -1,9 +1,9 @@
 #include <WiFi.h>
 #include <WebSocketsClient.h>
 
-#define RELAY1_PIN 26
-#define RELAY2_PIN 25
-#define RELAY3_PIN 23
+#define RELAY1_PIN 14
+#define RELAY2_PIN 27
+#define RELAY3_PIN 26
 #define RELAY4_PIN 32
 
 const char* WIFI_SSID = "ASSD";
@@ -33,14 +33,14 @@ void onWsEvent(WStype_t type, uint8_t * payload, size_t length) {
       String cmd = String((char*)payload).substring(0, length);
       cmd.trim();
       Serial.printf("[WS] cmd: %s\n", cmd.c_str());
-      if (cmd == "CH1_ON")  digitalWrite(RELAY1_PIN, HIGH);
-      if (cmd == "CH1_OFF") digitalWrite(RELAY1_PIN, LOW);
-      if (cmd == "CH2_ON")  digitalWrite(RELAY2_PIN, HIGH);
-      if (cmd == "CH2_OFF") digitalWrite(RELAY2_PIN, LOW);
-      if (cmd == "CH3_ON")  digitalWrite(RELAY3_PIN, HIGH);
-      if (cmd == "CH3_OFF") digitalWrite(RELAY3_PIN, LOW);
-      if (cmd == "CH4_ON")  digitalWrite(RELAY4_PIN, HIGH);
-      if (cmd == "CH4_OFF") digitalWrite(RELAY4_PIN, LOW);
+      if (cmd == "CH1_ON")  { digitalWrite(RELAY1_PIN, HIGH); Serial.println("Relay 1 ON"); }
+      if (cmd == "CH1_OFF") { digitalWrite(RELAY1_PIN, LOW);  Serial.println("Relay 1 OFF"); }
+      if (cmd == "CH2_ON")  { digitalWrite(RELAY2_PIN, HIGH); Serial.println("Relay 2 ON"); }
+      if (cmd == "CH2_OFF") { digitalWrite(RELAY2_PIN, LOW);  Serial.println("Relay 2 OFF"); }
+      if (cmd == "CH3_ON")  { digitalWrite(RELAY3_PIN, HIGH); Serial.println("Relay 3 ON"); }
+      if (cmd == "CH3_OFF") { digitalWrite(RELAY3_PIN, LOW);  Serial.println("Relay 3 OFF"); }
+      if (cmd == "CH4_ON")  { digitalWrite(RELAY4_PIN, HIGH); Serial.println("Relay 4 ON"); }
+      if (cmd == "CH4_OFF") { digitalWrite(RELAY4_PIN, LOW);  Serial.println("Relay 4 OFF"); }
       break;
     }
 
@@ -50,6 +50,8 @@ void onWsEvent(WStype_t type, uint8_t * payload, size_t length) {
 }
 
 void setup() {
+  Serial.begin(115200);
+  
   pinMode(RELAY1_PIN, OUTPUT);
   pinMode(RELAY2_PIN, OUTPUT);
   pinMode(RELAY3_PIN, OUTPUT);
@@ -58,8 +60,12 @@ void setup() {
   digitalWrite(RELAY2_PIN, LOW);
   digitalWrite(RELAY3_PIN, LOW);
   digitalWrite(RELAY4_PIN, LOW);
-
-  Serial.begin(115200);
+  
+  Serial.println("Relay pins initialized:");
+  Serial.printf("Relay 1: Pin %d\n", RELAY1_PIN);
+  Serial.printf("Relay 2: Pin %d\n", RELAY2_PIN);
+  Serial.printf("Relay 3: Pin %d\n", RELAY3_PIN);
+  Serial.printf("Relay 4: Pin %d\n", RELAY4_PIN);
   Serial.print("Connecting to WiFi");
   WiFi.begin(WIFI_SSID, WIFI_PASS);
   while (WiFi.status() != WL_CONNECTED) { delay(500); Serial.print("."); }
